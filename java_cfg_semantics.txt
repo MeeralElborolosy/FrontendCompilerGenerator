@@ -1,0 +1,24 @@
+METHOD_BODY := STATEMENT_LIST { }
+STATEMENT_LIST := STATEMENT
+STATEMENT_LIST := STATEMENT_LIST STATEMENT
+STATEMENT := DECLARATION
+STATEMENT := IF
+STATEMENT := WHILE
+STATEMENT := ASSIGNMENT
+DECLARATION := PRIMITIVE_TYPE 'id' ';' { type = node.children[0].get_attribute('type')\nadd_var(node.children[1][1],type)\n') }
+PRIMITIVE_TYPE := 'int' { node.add_attribute('type', 'i')\n }
+PRIMITIVE_TYPE := 'float' { node.add_attribute('type', 'f')\n }
+IF := 'if' '(' EXPRESSION ')' '{' STATEMENT '}' 'else' '{' STATEMENT '}'
+WHILE := 'while' '(' EXPRESSION ')' '{' STATEMENT '}'
+ASSIGNMENT := 'id' 'assign' EXPRESSION ';' { (idx, type) = get_var(node.children[0][1])\nprint(str(type) + 'store_' + str(idx))\n  }
+EXPRESSION := SIMPLE_EXPRESSION { }
+EXPRESSION := SIMPLE_EXPRESSION 'relop' SIMPLE_EXPRESSION { }
+SIMPLE_EXPRESSION := TERM { node.add_attribute('type', node.children[1].get_attribute('type'))\n }
+SIMPLE_EXPRESSION := SIGN TERM { print('negate top of stack')\n }
+SIMPLE_EXPRESSION := SIMPLE_EXPRESSION 'addop' TERM { type = node.children[2].get_attribute('type')\nprint(str(type) + 'add')\n }
+TERM := FACTOR { node.add_attribute('type', node.children[0].get_attribute('type'))\n }
+TERM := TERM 'mulop' FACTOR { type = node.children[2].get_attribute('type')\nprint(str(type) + 'mul')\n }
+FACTOR := 'id' { (idx, type) = get_var(node.children[0][1])\nnode.add_attribute('type', type)\nprint(str(type) + 'load_' + str(idx))\n }
+FACTOR := 'num' { val = node.children[0][1]\ntype = get_num_type(val)\nnode.add_attribute('type', type)\nprint('b' + str(type) + 'push ' + str(val))\n }
+FACTOR := '(' EXPRESSION ')' { node.add_attribute('type', node.children[1].get_attribute('type'))\n }
+SIGN := 'addop' { node.add_attribute('sign', node.children[0][1])\n }

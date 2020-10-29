@@ -1,0 +1,5 @@
+int sum;int count;int pass;
+int mnt;pass=0;while(pass<10)
+{
+    pass = pass + 1;
+}
